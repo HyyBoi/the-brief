@@ -73,8 +73,8 @@ export function Reader({ editionId, edition, isToday }: { editionId: string; edi
 
   return (
     <SignalProvider editionId={editionId}>
-      <div className="screen-only mx-auto max-w-[1180px] px-3 py-6 md:px-6 md:py-10">
-        <Unfold className="px-4 pb-6 pt-6 md:px-10">
+      <div className="screen-only mx-auto max-w-[1560px] px-2 py-4 md:px-5 md:py-6">
+        <Unfold className="px-4 pb-6 pt-6 md:px-12 lg:px-16">
           <Masthead left={`No. ${edition.number}, edited for ${edition.reader}`} right={`${longDate}. A ${edition.budget}-minute paper.`} />
 
           <div className="stage relative min-h-[60vh]">
@@ -187,7 +187,7 @@ function Inside({ stories, onKill }: { stories: Story[]; onKill: (id: string) =>
   if (!stories.length) return <p className="t-meta py-10">You killed everything on this page. Fair enough.</p>;
   const [first, ...rest] = stories;
   return (
-    <div className="grid gap-x-8 gap-y-8 md:grid-cols-3">
+    <div className="grid gap-x-10 gap-y-10 md:grid-cols-2 lg:grid-cols-3">
       <AnimatePresence>
         <Fold key={first.id} className="md:col-span-2">
           <StoryCard story={{ ...first, size: first.size === "brief" ? "brief" : "major" }} onKill={onKill} />

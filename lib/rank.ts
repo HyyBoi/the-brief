@@ -180,6 +180,7 @@ function toStory(c: Scored, size: StorySize, explore: boolean, reason: string): 
     explore,
     coverage: c.coverage,
     size,
+    image: c.image_url ?? null,
   };
 }
 

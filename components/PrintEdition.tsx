@@ -22,6 +22,10 @@ export function PrintEdition({ edition }: { edition: EditionPayload }) {
       {lead && (
         <section className="mt-3 grid grid-cols-3 gap-[6mm]">
           <div className="col-span-2">
+            {lead.image && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={lead.image} alt="" referrerPolicy="no-referrer" className="mb-2 aspect-[16/9] w-full object-cover grayscale" />
+            )}
             <p className="t-kicker">{lead.section}</p>
             <h2 className="t-lead" style={{ fontSize: "28pt" }}>
               {lead.title}

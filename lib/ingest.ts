@@ -9,7 +9,20 @@ import { chatJSON, embed } from "./ai";
 import { SECTIONS, asSection } from "./sections";
 import { toPg } from "./vec";
 
-const parser = new Parser({
+type Item = Parser.Item & {
+  mediaContent?: { $?: { url?: string; medium?: string; type?: string } }[];
+  mediaThumbnail?: { $?: { url?: string } };
+  "content:encoded"?: string;
+  enclosure?: { url?: string; type?: string };
+};
+
+const parser: Parser<object, Item> = new Parser({
+  customFields: {
+    item: [
+      ["media:content", "mediaContent", { keepArray: true }],
+      ["media:thumbnail", "mediaThumbnail"],
+    ],
+  },
   timeout: 10_000,
   headers: { "user-agent": "Mozilla/5.0 (TheBrief/1.0; personal newspaper)" },
 });
@@ -20,6 +33,17 @@ const strip = (s?: string) =>
     .replace(/&[a-z#0-9]+;/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+function pickImage(it: Item): string | null {
+  const cands = [
+    it.enclosure?.type?.startsWith("image") || /\.(jpe?g|png|webp)/i.test(it.enclosure?.url ?? "") ? it.enclosure?.url : undefined,
+    ...(it.mediaContent ?? []).filter((m) => !m.$?.medium || m.$?.medium === "image").map((m) => m.$?.url),
+    it.mediaThumbnail?.$?.url,
+    (it["content:encoded"] || it.content || "").match(/<img[^>]+src=["']([^"']+)["']/i)?.[1],
+  ];
+  const url = cands.find((u) => u && u.startsWith("http"));
+  return url ? url.replace(/&amp;/g, "&") : null;
+}
 
 export async function fetchFeeds(maxAgeHours = 48) {
   const since = Date.now() - maxAgeHours * 3600_000;
@@ -36,6 +60,7 @@ export async function fetchFeeds(maxAgeHours = 48) {
           title: strip(it.title),
           snippet: strip(it.contentSnippet || it.content || it.summary).slice(0, 700),
           published_at: new Date(it.isoDate || it.pubDate || Date.now()).toISOString(),
+          image_url: pickImage(it),
         }))
         .filter((a) => a.url.startsWith("http") && a.title.length > 8 && Date.parse(a.published_at) >= since);
     }),
@@ -51,7 +76,7 @@ export async function fetchFeeds(maxAgeHours = 48) {
     const chunk = unique.slice(i, i + 200);
     const { data, error } = await admin()
       .from("articles")
-      .upsert(chunk, { onConflict: "url", ignoreDuplicates: true })
+      .upsert(chunk, { onConflict: "url", ignoreDuplicates: false }) // refreshes photos on re-ingest
       .select("id");
     if (error) throw error;
     inserted += data?.length ?? 0;

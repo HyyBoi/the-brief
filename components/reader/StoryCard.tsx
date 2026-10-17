@@ -52,6 +52,20 @@ export function StoryCard({ story, onKill }: { story: Story; onKill: (id: string
       >
         {/* FRONT */}
         <div className="face col-start-1 row-start-1 bg-sheet" aria-hidden={flipped}>
+          {story.image && !isBrief && (
+            <figure className="mb-3 overflow-hidden bg-black/5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={story.image}
+                alt=""
+                loading={isLead ? "eager" : "lazy"}
+                referrerPolicy="no-referrer"
+                onError={(e) => (e.currentTarget.parentElement!.style.display = "none")}
+                className={`w-full object-cover grayscale contrast-125 transition duration-500 hover:grayscale-0 ${isLead ? "aspect-[16/9]" : "aspect-[3/2]"}`}
+              />
+              <figcaption className="mt-1 text-right text-[0.7rem] italic text-ink-soft">Photo via {story.source}</figcaption>
+            </figure>
+          )}
           <p className="t-kicker mb-2">
             {story.explore ? <span className="italic font-serif text-[0.85rem] font-normal">Off your beat: </span> : null}
             {story.section}

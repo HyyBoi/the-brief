@@ -8,7 +8,7 @@ import { buildMemo } from "./learn";
 import { parseVec, toPg } from "./vec";
 import type { Article, EditionPayload, Story } from "./types";
 
-const COLS = "id,url,source,region,title,summary,snippet,section,topics,published_at,embedding";
+const COLS = "id,url,source,region,title,summary,snippet,section,topics,published_at,embedding,image_url";
 
 async function candidates(vector: number[] | null): Promise<Article[]> {
   const sb = admin();
@@ -85,11 +85,26 @@ export async function buildEdition(userId: string, date = todayPK()) {
       reader: { name: profile.display_name, taste: profile.taste_summary, said: profile.dinner_answer },
       stories: stories.map((s, i) => ({ i, section: s.section, source: s.source, title: s.title, summary: s.summary })),
     };
-    editor = await chatJSON(EDITOR_PROMPT, JSON.stringify(input), EditorOut, { maxTokens: 3000 });
+    editor = await chatJSON(EDITOR_PROMPT, JSON.stringify(input), EditorOut, { maxTokens: 1600 });
     aiCalls++;
   } catch (e) {
     console.warn("[editor] AI failed, printing without the note:", (e as Error).message.slice(0, 200));
     editor.note = `${stories.length} stories, chosen for you from ${new Set(pool.map((p) => p.source)).size} outlets. Flip any story to tell the paper what you think of it.`;
+  }
+
+  // No AI available? Still print Three Things: "which outlet reported this?"
+  if (!editor.quiz.length) {
+    const outlets = [...new Set(pool.map((p) => p.source))];
+    editor.quiz = stories
+      .slice(0, 6)
+      .filter((s, i, arr) => arr.findIndex((x) => x.source === s.source) === i)
+      .slice(0, 3)
+      .flatMap((s) => {
+        const wrong = outlets.filter((o) => o !== s.source).sort(() => Math.random() - 0.5).slice(0, 3);
+        if (wrong.length < 3) return [];
+        const options = [...wrong, s.source].sort(() => Math.random() - 0.5);
+        return [{ q: `Which outlet reported: “${s.title}”?`, options, answer: options.indexOf(s.source), ref: stories.indexOf(s) }];
+      });
   }
 
   const { count } = await admin().from("editions").select("id", { count: "exact", head: true }).eq("user_id", userId);

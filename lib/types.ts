@@ -26,6 +26,7 @@ export type Article = {
   topics: string[];
   published_at: string;
   embedding: number[] | null;
+  image_url?: string | null;
 };
 
 export type StorySize = "lead" | "major" | "standard" | "brief";
@@ -42,6 +43,7 @@ export type Story = {
   explore: boolean;
   coverage: number;
   size: StorySize;
+  image?: string | null;
 };
 
 export type QuizItem = { q: string; options: string[]; answer: number; ref: string };
