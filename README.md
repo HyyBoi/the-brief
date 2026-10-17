@@ -4,6 +4,8 @@
 
 The Brief reads ~35 news desks overnight, from Dawn and Geo to the BBC, Nature and ESPNcricinfo, and prints a single personal paper, laid out like a real broadsheet and sized to the minutes you have. Read it on the web, turn its pages, flip any story to see why it's there, keep or kill it with a blue pencil, or download the whole edition as a PDF. Every mark you make changes tomorrow's paper.
 
+**Live:** https://the-brief-vert.vercel.app
+
 Built for NaSCon '26 AI Hackathon.
 
 ## What makes it different
