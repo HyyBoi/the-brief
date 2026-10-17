@@ -1,0 +1,235 @@
+@import "tailwindcss";
+
+/* ── THE BRIEF. design tokens ───────────────────────────────────────────────
+   A white sheet on a black desk. Ink is black. The only colour is the editor's
+   blue pencil — used exclusively for the reader's own marks (keep / kill / answers). */
+@theme {
+  --color-desk: #000000;
+  --color-sheet: #ffffff;
+  --color-ink: #000000;
+  --color-ink-soft: #4a4a4a;
+  --color-hair: #d6d6d6;
+  --color-pencil: #1f3fd6;
+
+  --font-mast: "UnifrakturMaguntia", "Old English Text MT", serif;
+  --font-serif: "Newsreader Variable", "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Libre Franklin Variable", "Libre Franklin", "Franklin Gothic Medium", Arial, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-desk);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-serif);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-pencil);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-pencil);
+  outline-offset: 3px;
+}
+
+/* ── type scale (1.25 modular, Bringhurst-ish) ── */
+.t-mast {
+  font-family: var(--font-mast);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+.t-lead {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 4.6vw, 3.9rem);
+  line-height: 1.02;
+  letter-spacing: -0.022em;
+  font-variation-settings: "opsz" 72;
+}
+.t-major {
+  font-weight: 700;
+  font-size: clamp(1.45rem, 2.2vw, 1.85rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  font-variation-settings: "opsz" 48;
+}
+.t-std {
+  font-weight: 600;
+  font-size: 1.22rem;
+  line-height: 1.15;
+  letter-spacing: -0.008em;
+  font-variation-settings: "opsz" 24;
+}
+.t-brief {
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+.t-body {
+  font-size: 1.02rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+  hyphens: manual;
+  font-variation-settings: "opsz" 12;
+}
+.t-kicker {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.01em;
+}
+.t-meta {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+.t-ui {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+/* newspaper rules */
+.rule-double {
+  border-top: 3px double var(--color-ink);
+}
+.rule {
+  border-top: 1px solid var(--color-ink);
+}
+.rule-hair {
+  border-top: 1px solid var(--color-hair);
+}
+@media (min-width: 768px) {
+  .col-rule > * + * {
+    border-left: 1px solid var(--color-hair);
+  }
+}
+
+/* 3D */
+.stage {
+  perspective: 2600px;
+  perspective-origin: 50% 20%;
+}
+.preserve {
+  transform-style: preserve-3d;
+}
+.face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* the sheet: real paper weight, not a "card" */
+.sheet {
+  background: var(--color-sheet);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04),
+    0 40px 80px -30px rgba(255, 255, 255, 0.08);
+}
+
+/* blue-pencil strike for KILL */
+.strike {
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: 0.55em;
+  height: 3px;
+  background: var(--color-pencil);
+  transform-origin: left center;
+  border-radius: 2px;
+}
+
+.btn {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.82rem;
+  padding: 0.55rem 0.9rem;
+  border: 1.5px solid currentColor;
+  transition: background 0.15s, color 0.15s;
+}
+.btn:hover {
+  background: var(--color-ink);
+  color: var(--color-sheet);
+}
+.btn-solid {
+  background: var(--color-ink);
+  color: var(--color-sheet);
+}
+.btn-solid:hover {
+  background: var(--color-pencil);
+  border-color: var(--color-pencil);
+}
+.btn-pencil {
+  color: var(--color-pencil);
+}
+.btn-pencil:hover {
+  background: var(--color-pencil);
+  color: #fff;
+}
+
+.link-under {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+.link-under:hover {
+  text-decoration-color: var(--color-pencil);
+  color: var(--color-pencil);
+}
+
+.print-only {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── PRINT / PDF: flat broadsheet, no 3D, no chrome ── */
+@page {
+  size: A4;
+  margin: 11mm 10mm;
+}
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+  .screen-only {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .p-cols {
+    column-count: 3;
+    column-gap: 6mm;
+    column-rule: 0.5pt solid #bbb;
+  }
+  .p-avoid {
+    break-inside: avoid;
+  }
+  .p-break {
+    break-before: page;
+  }
+  .t-body {
+    font-size: 9.2pt;
+    line-height: 1.38;
+  }
+}
